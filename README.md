@@ -13,6 +13,7 @@ Next in Pipe
 - showing Avtars for Rooms/Users (e.g. first Steps with ContentManager/MediasCache)
 - Implementing Multi Accounts
 - OLM/Encryption
+- Create/Join/Invite Users/Rooms
 => The Messenger is roughly on par with Conversations
 - Write a better Matrix-Android-SDK Introduction/Tutorial to get folks started.
 
