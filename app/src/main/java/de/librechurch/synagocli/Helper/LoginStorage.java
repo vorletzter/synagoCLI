@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package de.librechurch.synagocli;
+package de.librechurch.synagocli.Helper;
 
 import android.content.Context;
 import android.content.SharedPreferences;

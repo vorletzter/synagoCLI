@@ -1,9 +1,8 @@
-package de.librechurch.synagocli;
+package de.librechurch.synagocli.Adapter;
 
 import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +13,9 @@ import android.widget.TextView;
 import org.matrix.androidsdk.rest.model.Event;
 
 import java.util.ArrayList;
+
+import de.librechurch.synagocli.Matrix;
+import de.librechurch.synagocli.R;
 
 public class EventAdapter extends ArrayAdapter<Event> {
 
@@ -35,7 +37,7 @@ public class EventAdapter extends ArrayAdapter<Event> {
         //Log.d(LOG_TAG, "Content "+ event.getContent());
 
         try {
-            message = event.content.getAsJsonObject().get("body").toString().replaceAll("\"", "");
+            message = event.getContent().getAsJsonObject().get("body").toString().replaceAll("\"", "");
         }catch (NullPointerException e) {
             message = "<< " + event.getType() + " >>";
         }

@@ -1,15 +1,9 @@
 package de.librechurch.synagocli;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
 import android.content.Intent;
-import android.os.Build;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import org.matrix.androidsdk.HomeServerConnectionConfig;
@@ -22,6 +16,9 @@ import org.matrix.androidsdk.listeners.MXEventListener;
 import org.matrix.androidsdk.rest.model.login.Credentials;
 
 import java.util.ArrayList;
+
+import de.librechurch.synagocli.Helper.LoginStorage;
+import de.librechurch.synagocli.Services.ListenerService;
 
 public class MainActivity extends AppCompatActivity {
 

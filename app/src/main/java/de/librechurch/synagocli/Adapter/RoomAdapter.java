@@ -1,7 +1,6 @@
-package de.librechurch.synagocli;
+package de.librechurch.synagocli.Adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +9,8 @@ import android.widget.TextView;
 import org.matrix.androidsdk.data.RoomSummary;
 import org.matrix.androidsdk.rest.model.RoomMember;
 import java.util.ArrayList;
+
+import de.librechurch.synagocli.R;
 
 
 public class RoomAdapter extends ArrayAdapter<RoomSummary> {

@@ -19,6 +19,8 @@ import org.matrix.androidsdk.rest.model.MatrixError;
 
 import java.util.ArrayList;
 
+import de.librechurch.synagocli.Adapter.EventAdapter;
+
 public class ChatActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = ChatActivity.class.getSimpleName();
@@ -48,16 +50,19 @@ public class ChatActivity extends AppCompatActivity {
         this.matrix = Matrix.getInstance();
         this.newMessageEditText = (EditText) findViewById(R.id.sendTextInput);
 
-        roomID = getIntent().getExtras().getString("roomID");
+        roomID = getIntent().getExtras().getString("roomId");
         this.room = matrix.getSession().getDataHandler().getRoom(roomID);
         this.roomSummary = room.getRoomSummary();
 
         setTitle(this.roomSummary.getLatestRoomState().name);
 
+        this.room.getDataHandler().setLazyLoadingEnabled(true);
         ArrayList<Event> events = new ArrayList<>(this.room.getStore().getRoomMessages(roomID));
+        /*
         for (Event e : events) {
             Log.d(LOG_TAG, "->"+e.getType()+"::"+e.getContent());
         }
+        */
 
         // Create the adapter to convert the array to views
         adapter = new EventAdapter(this, events);

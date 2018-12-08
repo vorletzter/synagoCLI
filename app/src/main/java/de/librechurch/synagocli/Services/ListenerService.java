@@ -1,4 +1,4 @@
-package de.librechurch.synagocli;
+package de.librechurch.synagocli.Services;
 
 import android.annotation.TargetApi;
 import android.app.Notification;
@@ -18,6 +18,11 @@ import android.widget.Toast;
 import org.matrix.androidsdk.data.RoomState;
 import org.matrix.androidsdk.listeners.MXEventListener;
 import org.matrix.androidsdk.rest.model.Event;
+
+import de.librechurch.synagocli.ChatActivity;
+import de.librechurch.synagocli.Matrix;
+import de.librechurch.synagocli.R;
+import de.librechurch.synagocli.RoomListActivity;
 
 public class ListenerService extends Service {
 
@@ -75,11 +80,10 @@ public class ListenerService extends Service {
                     if(!TextUtils.equals(Matrix.getInstance().getSession().getMyUserId(), event.getSender())) {
                         try {
                             message = event.content.getAsJsonObject().get("body").toString().replaceAll("\"", "");
-
                         }catch (NullPointerException e) {
-
+                            Log.e(LOG_TAG, "Could not extract Message from Event");
                         }
-                        msgNotification(message, "From: "+event.getSender());
+                        msgNotification(message, event.getSender(), roomState.roomId);
                     }
                 }
             }
@@ -104,8 +108,9 @@ public class ListenerService extends Service {
         }
     }
 
-    private void msgNotification(String msg, String user){
-        Intent notificationIntent = new Intent(this, RoomListActivity.class);
+    private void msgNotification(String msg, String user, String roomId){
+        Intent notificationIntent = new Intent(this, ChatActivity.class);
+        notificationIntent.putExtra("roomId",roomId);
         PendingIntent pendingIntent=PendingIntent.getActivity(this,0,notificationIntent,0);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this,NOTIFICATION_EVENT_CHANNEL_ID)
@@ -114,7 +119,6 @@ public class ListenerService extends Service {
                 .setContentText(msg)
                 .setAutoCancel(true)
                 .setOngoing(false)
-                .setDeleteIntent(pendingIntent)
                 .setCategory(Notification.CATEGORY_MESSAGE)
                 .setContentIntent(pendingIntent);
 
