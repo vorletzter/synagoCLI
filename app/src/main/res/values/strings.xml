@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">synagoCLI</string>
+    <string name="title_activity_list">ListActivity</string>
+    <string name="input_placeholder">Write a message</string>
+    <string name="title_activity_login">Sign in</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_loginName">Name</string>
+    <string name="prompt_HomeSever">Home Server</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_incorrect_homeserver">Could not contact this Homeserver</string>
+    <string name="error_uri_parse">Could not parse URI. Did you use http(s)://</string>
+    <string name="error_field_required">This field is required</string>
+
+</resources>
