@@ -1,5 +1,6 @@
 package de.librechurch.synagocli;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -7,6 +8,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import org.matrix.androidsdk.MXSession;
 import org.matrix.androidsdk.data.Room;
 import org.matrix.androidsdk.data.RoomMediaMessage;
 import org.matrix.androidsdk.data.RoomState;
@@ -31,41 +33,55 @@ public class ChatActivity extends AppCompatActivity {
     // "New-Message"-Edit
     private EditText newMessageEditText;
 
-    // Information about The current room
+    // Information about The current room and Session User
     private Room room;
     private RoomSummary roomSummary;
-    String roomID;
+    private MXSession mSession;
+    private String roomId;
+    private String userId;
 
     //Instance of our EventAdapterClass
     EventAdapter adapter;
     //The ListView for attaching the EventAdapter.
     ListView listView;
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        //Should be called, if user klicked on a Notifciation due
+        // to android:launchMode="singleTop" in Manifest
+        super.onNewIntent(intent);
+        Log.d(LOG_TAG, "Chat was already open.. overwriting");
+
+        //toDo... Change the UI to the new Chat
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        this.matrix = Matrix.getInstance();
+        loadUI();
+    }
+
+    private void loadUI() {
+        this.matrix = Matrix.getInstance(getApplicationContext());
         this.newMessageEditText = (EditText) findViewById(R.id.sendTextInput);
 
-        roomID = getIntent().getExtras().getString("roomId");
-        this.room = matrix.getSession().getDataHandler().getRoom(roomID);
+        this.roomId = getIntent().getExtras().getString("roomId");
+        this.userId = getIntent().getExtras().getString("userId");
+        Log.d(LOG_TAG, "opening for userId "+ this.userId+" and roomId "+roomId);
+
+        mSession = Matrix.getInstance(getApplicationContext()).getSessionByUserId(userId);
+        this.room = mSession.getDataHandler().getRoom(roomId);
         this.roomSummary = room.getRoomSummary();
 
         setTitle(this.roomSummary.getLatestRoomState().name);
 
         this.room.getDataHandler().setLazyLoadingEnabled(true);
-        ArrayList<Event> events = new ArrayList<>(this.room.getStore().getRoomMessages(roomID));
-        /*
-        for (Event e : events) {
-            Log.d(LOG_TAG, "->"+e.getType()+"::"+e.getContent());
-        }
-        */
+        ArrayList<Event> events = new ArrayList<>(this.room.getStore().getRoomMessages(roomId));
 
         // Create the adapter to convert the array to views
-        adapter = new EventAdapter(this, events);
+        adapter = new EventAdapter(this, events, mSession);
         // Attach the adapter to a ListView
         listView = (ListView) findViewById(R.id.events_view);
         listView.setAdapter(adapter);
@@ -80,7 +96,7 @@ public class ChatActivity extends AppCompatActivity {
                 processEvent(event);
             }
         };
-        matrix.getSession().getDataHandler().addListener(new MXRoomEventListener(room, mListener));
+        mSession.getDataHandler().addListener(new MXRoomEventListener(room, mListener));
         room.sendReadReceipt();
     }
 

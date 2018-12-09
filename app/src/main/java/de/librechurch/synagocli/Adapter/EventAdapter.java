@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 
 import android.widget.TextView;
 
+import org.matrix.androidsdk.MXSession;
 import org.matrix.androidsdk.rest.model.Event;
 
 import java.util.ArrayList;
@@ -20,9 +21,11 @@ import de.librechurch.synagocli.R;
 public class EventAdapter extends ArrayAdapter<Event> {
 
     private static final String LOG_TAG = EventAdapter.class.getSimpleName();
+    private MXSession mSession;
 
-    public EventAdapter(Context context, ArrayList<Event> rooms) {
+    public EventAdapter(Context context, ArrayList<Event> rooms, MXSession mSession) {
         super(context, 0, rooms);
+        this.mSession = mSession;
     }
 
     @Override
@@ -43,7 +46,7 @@ public class EventAdapter extends ArrayAdapter<Event> {
         }
 
         // Message was sent by us
-        if(TextUtils.equals(Matrix.getInstance().getSession().getMyUserId(), event.getSender())) {
+        if(TextUtils.equals(mSession.getMyUserId(), event.getSender())) {
 
             //If the Event is not yet send (e.g. queued to be) it gets a different color.
             if(!event.isSent()) {

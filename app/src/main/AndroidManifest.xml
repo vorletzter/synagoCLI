@@ -21,24 +21,26 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-        <activity android:name=".MainActivity"
+        <activity
+            android:name=".MainActivity"
             android:label="Synago">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".LoginActivity"/>
-        <activity android:name=".ChatActivity" />
-        <activity android:name=".RoomListActivity" />
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".ChatActivity"
+            android:launchMode="singleTop"
+            />
 
         <service
             android:name=".Services.ListenerService"
             android:enabled="true"
             android:exported="true" />
 
+        <activity android:name=".HomeActivity"></activity>
     </application>
 
 </manifest>
