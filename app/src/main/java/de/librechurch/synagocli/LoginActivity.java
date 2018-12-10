@@ -3,6 +3,7 @@ package de.librechurch.synagocli;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 
 import android.net.Uri;
@@ -152,6 +153,8 @@ public class LoginActivity extends AppCompatActivity {
                     LoginStorage loginStorage = new LoginStorage(getApplicationContext());
                     loginStorage.addCredentials(hsConfig);
                     //We just kill the Activity here and let onResume() in MainActivity Handle the login
+                    final Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(intent);
                     finish();
                 }
 

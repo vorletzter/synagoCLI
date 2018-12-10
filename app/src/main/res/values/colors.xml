@@ -8,5 +8,9 @@
     <color name="my_message_sending">#5c6bc0</color>
     <color name="their_message">#bdbdbd</color>
 
-    <color name="notification_badge">#c43b4e</color>
+    <color name="notification_badge">@color/colorAccent</color>
+    <color name="notification_badge_text">#ffffff</color>
+
+    <color name="home_title_strip_bg">@color/colorAccent</color>
+    <color name="home_title_strip_text">#ffffff</color>
 </resources>

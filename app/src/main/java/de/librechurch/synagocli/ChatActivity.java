@@ -52,7 +52,8 @@ public class ChatActivity extends AppCompatActivity {
         super.onNewIntent(intent);
         Log.d(LOG_TAG, "Chat was already open.. overwriting");
 
-        //toDo... Change the UI to the new Chat
+        loadUI();
+        adapter.notifyDataSetChanged();
     }
 
     @Override

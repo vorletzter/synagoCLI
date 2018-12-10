@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/chat_info"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
     <LinearLayout
+        android:id="@+id/chat_info_layout"
         android:orientation="vertical" android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingVertical="10dp"
         android:paddingRight="15dp"
         android:paddingLeft="60dp"
-        android:id="@+id/chat_info_layout"
         android:clipToPadding="false">
 
         <TextView
@@ -35,17 +37,18 @@
             android:text="Small Text"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@android:color/holo_green_dark" />
+
     </LinearLayout>
 
     <TextView
         android:id="@+id/notification_badge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignRight="@id/chat_info_layout"
+        android:layout_alignLeft="@id/chat_info_layout"
         android:background="@drawable/notification_badge"
-        android:text="00"
+        android:text="@color/notification_badge_text"
         android:visibility="invisible"
-        android:textColor="#FFF"
+        android:textColor="@color/notification_badge_text"
         android:textSize="16sp"
         android:textStyle="bold" />
 </RelativeLayout>

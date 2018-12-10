@@ -37,58 +37,65 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
         //Check for valid Login Data...
         LoginStorage loginStorage = new LoginStorage(getApplicationContext());
         ArrayList<HomeServerConnectionConfig> hsConfigList = loginStorage.getCredentialsList();
         sessions = hsConfigList.size();
 
-        if(hsConfigList.size() > 0) {
+        if (hsConfigList.size() > 0) {
             // Store needs full hsConfig (inc. AccessToken), otherwise Matrix declares store as "corrupted".
             // Start all Sessions..
             Log.d(LOG_TAG, "found hsConfigs in storage, activating sessions");
             for (HomeServerConnectionConfig hs : hsConfigList) {
                 Log.d(LOG_TAG, "Starting Session: " + hs);
                 session = Matrix.getInstance(getApplicationContext()).activateSession(hs);
-                Matrix.getInstance(getApplicationContext()).addSession(session);
+                if (session != null) {
+                    Matrix.getInstance(getApplicationContext()).addSession(session);
+                    if (session.getDataHandler().isInitialSyncComplete()) {
+                        Log.d(LOG_TAG, "(" + session.getMyUserId() + ") completed initial sync");
+                        Log.d(LOG_TAG, "Waiting for " + sessions + "Sessions");
+                        sessions--;
+                        if (MainActivity.this.sessions == 0) {
+                            final Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    } else {
+                        Log.d(LOG_TAG, "(" + session.getMyUserId() + ") initial sync in progess");
+                        session.getDataHandler().addListener(new MXEventListener() {
+                            @Override
+                            public void onInitialSyncComplete(String toToken) {
+                                //super.onInitialSyncComplete(toToken);
+                                //Matrix.getInstance().getSession().getDataHandler().getStore().commit();
+                                MainActivity.this.sessions--;
+                                Log.d(LOG_TAG, "Waiting for " + sessions + "Sessions");
+                                if (MainActivity.this.sessions == 0) {
+                                    final Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+                                    startActivity(intent);
+                                    finish();
 
-                if (session.getDataHandler().isInitialSyncComplete()) {
-                    Log.d(LOG_TAG, "(" + session.getMyUserId() + ") completed initial sync");
-                    Log.d(LOG_TAG, "Waiting for " + sessions + "Sessions");
+                                }
+                                Log.d(LOG_TAG, "(" + MainActivity.this.session.getMyUserId() + ") completed initial sync");
+                            }
+                        });
+                    }
+                } else {
+                    Log.d(LOG_TAG, "got invalid Session, but will Continue");
                     sessions--;
                     if (MainActivity.this.sessions == 0) {
                         final Intent intent = new Intent(MainActivity.this, HomeActivity.class);
                         startActivity(intent);
                         finish();
                     }
-                } else {
-                    Log.d(LOG_TAG, "(" + session.getMyUserId() + ") initial sync in progess");
-                    session.getDataHandler().addListener(new MXEventListener() {
-                        @Override
-                        public void onInitialSyncComplete(String toToken) {
-                            //super.onInitialSyncComplete(toToken);
-                            //Matrix.getInstance().getSession().getDataHandler().getStore().commit();
-                            MainActivity.this.sessions--;
-                            Log.d(LOG_TAG, "Waiting for " + sessions + "Sessions");
-                            if (MainActivity.this.sessions == 0) {
-                                final Intent intent = new Intent(MainActivity.this, HomeActivity.class);
-                                startActivity(intent);
-                                finish();
-
-                            }
-                            Log.d(LOG_TAG, "(" + MainActivity.this.session.getMyUserId() + ") completed initial sync");
-                        }
-                    });
                 }
             }
             startService();
-        }else{
-            Log.d(LOG_TAG,"no valid sessions found. Prompting");
+        } else {
+            Log.d(LOG_TAG, "no valid sessions found. Prompting");
                 final Intent intent = new Intent(this, LoginActivity.class);
                 startActivity(intent);
                 finish();
             }
-
 
     }
 

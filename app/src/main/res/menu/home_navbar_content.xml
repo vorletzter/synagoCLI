@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_account_settings"
+            android:icon="@drawable/ic_account_black_24dp"
+            android:title="@string/account_settings" />
+        <item
+            android:id="@+id/nav_general_settings"
+            android:icon="@drawable/ic_settings_black_24dp"
+            android:title="@string/general_settings" />
+        <item
+            android:id="@+id/nav_matrix_contacts"
+            android:icon="@drawable/ic_contacts_black_24dp"
+            android:title="@string/matrix_contacts" />
+        <item
+            android:id="@+id/nav_quit"
+            android:icon="@drawable/ic_close_black_24dp"
+            android:title="@string/close_app" />
+    </group>
+
+    <item android:title="Communicate">
+        <menu>
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/circle"
+                android:title="@string/visit_homepage" />
+            <item
+                android:id="@+id/nav_send"
+                android:icon="@drawable/circle"
+                android:title="@string/visit_github" />
+        </menu>
+    </item>
+</menu>
