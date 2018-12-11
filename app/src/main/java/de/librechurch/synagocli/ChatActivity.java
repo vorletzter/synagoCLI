@@ -19,6 +19,12 @@ import org.matrix.androidsdk.rest.callback.ApiCallback;
 import org.matrix.androidsdk.rest.model.Event;
 import org.matrix.androidsdk.rest.model.MatrixError;
 
+
+// found some Magic Items from the SDK i could/should use maybe?
+import org.matrix.androidsdk.adapters.AbstractMessagesAdapter;
+import org.matrix.androidsdk.adapters.MessageRow;
+
+
 import java.util.ArrayList;
 
 import de.librechurch.synagocli.Adapter.EventAdapter;

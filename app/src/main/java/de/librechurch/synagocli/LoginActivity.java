@@ -160,19 +160,19 @@ public class LoginActivity extends AppCompatActivity {
 
                 public void onMatrixError(MatrixError e) {
                     Log.e(LOG_TAG, "## onNetworkError: "+e.getMessage());
-                    Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "MatrixError! The Message is: '" + e.getMessage() + "'", Toast.LENGTH_LONG).show();
                     showProgress(false);
                 }
 
                 public void onNetworkError(java.lang.Exception e) {
                     Log.e(LOG_TAG, "## onNetworkError: " +  e.getMessage());
-                    Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "NetworkError! Maybe Error in URL? The Message is: '" + e.getMessage() + "'", Toast.LENGTH_LONG).show();
                     showProgress(false);
                 }
 
                 public void onUnexpectedError(java.lang.Exception e) {
                     Log.e(LOG_TAG, "## onUnexpectedError: " + e.getMessage());
-                    Toast.makeText(getApplicationContext(),"unexpected error. Maybe no Homesever? : "+e.getMessage(),Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Unexpected Error. : " + e.getMessage(), Toast.LENGTH_LONG).show();
                     showProgress(false);
                 }
             });

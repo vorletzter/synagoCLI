@@ -8,13 +8,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.matrix.androidsdk.MXSession;
 import org.matrix.androidsdk.rest.model.Event;
+import org.matrix.androidsdk.rest.model.User;
 
 import java.util.ArrayList;
 
+import de.librechurch.synagocli.Helper.AvatarHelper;
 import de.librechurch.synagocli.Matrix;
 import de.librechurch.synagocli.R;
 
@@ -32,12 +35,17 @@ public class EventAdapter extends ArrayAdapter<Event> {
     public View getView(int position, View convertView, ViewGroup parent) {
         // Get the data item for this position
         Event event = getItem(position);
+        User user = mSession.getDataHandler().getUser(event.getSender());
         String message;
+
         LayoutInflater messageInflater = (LayoutInflater) getContext().getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
         ViewEventHolder viewHolder = new ViewEventHolder();
 
         //Log.d(LOG_TAG, "Sender: "+event.getSender()+ "(myID: "+Matrix.getInstance().getSession().getMyUserId());
         //Log.d(LOG_TAG, "Content "+ event.getContent());
+
+        if (event.isEncrypted()) {
+        }
 
         try {
             message = event.getContent().getAsJsonObject().get("body").toString().replaceAll("\"", "");
@@ -70,7 +78,7 @@ public class EventAdapter extends ArrayAdapter<Event> {
             viewHolder.senderName =
                     (TextView) convertView.findViewById(R.id.sender_name);
             viewHolder.senderAvatar =
-                    (View) convertView.findViewById(R.id.sender_avatar);
+                    (ImageView) convertView.findViewById(R.id.sender_avatar);
             viewHolder.messageBody =
                     (TextView) convertView.findViewById(R.id.message_body);
 
@@ -80,14 +88,16 @@ public class EventAdapter extends ArrayAdapter<Event> {
             // Populate the data into the template view using the data object
             TextView senderName =
                     ((ViewEventHolder) convertView.getTag()).senderName;
-            View senderAvatar =
+            ImageView senderAvatar =
                     ((ViewEventHolder) convertView.getTag()).senderAvatar;
             TextView messageBody =
                     ((ViewEventHolder) convertView.getTag()).messageBody;
 
 
-            senderName.setText(event.getSender());
+            AvatarHelper.loadUserAvatar(getContext(), mSession, senderAvatar, user);
+            senderName.setText(user.displayname);
             messageBody.setText(message);
+
 
             //GradientDrawable drawable = (GradientDrawable) viewHolder.senderAvatar.getBackground();
             //drawable.setColor(Color.parseColor("12"));
@@ -102,5 +112,5 @@ public class EventAdapter extends ArrayAdapter<Event> {
 class ViewEventHolder{
     public TextView senderName;
     public TextView messageBody;
-    public View senderAvatar;
+    public ImageView senderAvatar;
 }

@@ -7,28 +7,33 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-    <LinearLayout
-        android:id="@+id/chat_info_layout"
-        android:orientation="vertical" android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingVertical="10dp"
-        android:paddingRight="15dp"
-        android:paddingLeft="60dp"
-        android:clipToPadding="false">
+    <ImageView
+        android:id="@+id/room_avatar_image_view"
+        android:layout_width="@dimen/chat_avatar_size"
+        android:layout_height="@dimen/chat_avatar_size"
+        app:srcCompat="@mipmap/ic_launcher_round"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="10dp"
+        android:contentDescription="@string/user_or_room_avatar" />
+
+
+    <RelativeLayout
+        android:id="@+id/chat_info_text_layout"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:orientation="vertical"
+        android:layout_toEndOf="@id/room_avatar_image_view"
+        android:layout_marginStart="10dp"
+        android:layout_toStartOf="@id/chat_info_misc_layout">
 
         <TextView
+            android:id="@+id/room_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="Large Text"
-            android:id="@+id/room_name" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Small Text"
-            android:id="@+id/room_topic" />
+            android:maxLines="1"
+            android:textStyle="bold"
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/room_mid"
@@ -36,19 +41,53 @@
             android:layout_height="wrap_content"
             android:text="Small Text"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="@android:color/holo_green_dark" />
+            android:textColor="@android:color/holo_green_dark"
+            android:layout_below="@id/room_name" />
 
-    </LinearLayout>
+        <TextView
+            android:id="@+id/room_topic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Small Text"
+            android:maxLines="1"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:layout_below="@id/room_mid" />
 
-    <TextView
-        android:id="@+id/notification_badge"
-        android:layout_width="wrap_content"
+        <View style="@style/Divider" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/chat_info_misc_layout"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@id/chat_info_layout"
-        android:background="@drawable/notification_badge"
-        android:text="@color/notification_badge_text"
-        android:visibility="invisible"
-        android:textColor="@color/notification_badge_text"
-        android:textSize="16sp"
-        android:textStyle="bold" />
+        android:layout_width="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginEnd="5dp"
+        android:layout_alignParentEnd="true">
+
+        <TextView
+            android:id="@+id/notification_badge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/notification_badge"
+            android:text="@color/notification_badge_text"
+            android:textColor="@color/notification_badge_text"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:visibility="invisible"
+            android:layout_alignParentBottom="true"
+            android:layout_below="@id/last_chat_time" />
+
+        <TextView
+            android:id="@+id/last_chat_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/time_or_date"
+            android:textColor="@color/grey_text"
+            android:textSize="16sp"
+            android:visibility="invisible"
+            android:textStyle="italic" />
+    </RelativeLayout>
+
 </RelativeLayout>

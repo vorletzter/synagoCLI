@@ -94,7 +94,7 @@ public class RoomFragment extends Fragment {
         // Create the adapter to convert the array to views
         //roomAdapter adapter = new RoomAdapter(this, roomSummaries);
         // Attach the adapter to a ListView
-        mAdapter = new RoomAdapter(rootView.getContext(), roomSummaries);
+        mAdapter = new RoomAdapter(rootView.getContext(), roomSummaries, mSession);
         listView = (ListView) rootView.findViewById(R.id.rooms_view);
         listView.setAdapter(mAdapter);
 

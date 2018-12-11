@@ -13,4 +13,6 @@
 
     <color name="home_title_strip_bg">@color/colorAccent</color>
     <color name="home_title_strip_text">#ffffff</color>
+
+    <color name="grey_text">#9e9e9e</color>
 </resources>
