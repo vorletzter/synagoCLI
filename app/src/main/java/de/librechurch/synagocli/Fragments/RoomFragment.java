@@ -136,7 +136,6 @@ public class RoomFragment extends Fragment {
         return rootView;
     }
 
-
     @Override
     public void onResume() {
         NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
