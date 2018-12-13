@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     tools:context=".Fragments.RoomFragment">
 
-    <ListView
+    <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:id="@+id/rooms_view"
         android:layout_weight="2"

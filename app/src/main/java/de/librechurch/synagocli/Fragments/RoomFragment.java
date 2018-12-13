@@ -2,26 +2,32 @@ package de.librechurch.synagocli.Fragments;
 
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
 
 import org.matrix.androidsdk.MXSession;
+import org.matrix.androidsdk.data.Room;
 import org.matrix.androidsdk.data.RoomState;
 import org.matrix.androidsdk.data.RoomSummary;
+import org.matrix.androidsdk.data.store.IMXStore;
 import org.matrix.androidsdk.listeners.MXEventListener;
 import org.matrix.androidsdk.rest.model.Event;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
-import de.librechurch.synagocli.Adapter.RoomAdapter;
-import de.librechurch.synagocli.ChatActivity;
+import de.librechurch.synagocli.Adapter.RoomSummaryAdapter;
 import de.librechurch.synagocli.Helper.Helper;
 import de.librechurch.synagocli.Matrix;
 import de.librechurch.synagocli.R;
@@ -41,10 +47,11 @@ public class RoomFragment extends Fragment {
     private MXSession mSession;
 
     // All joined Groups and Conversations for Session.
-    private static ArrayList<RoomSummary> roomSummaries;
+    private ArrayList<RoomSummary> roomSummaries;
+    private ArrayList<RoomState> mRoomStates;
 
-    private RoomAdapter mAdapter;
-    private ListView listView;
+    private RoomSummaryAdapter mAdapter;
+    private RecyclerView mRecyclerView;
 
     boolean loaded;
 
@@ -87,30 +94,28 @@ public class RoomFragment extends Fragment {
                 R.layout.fragment_room, container, false);
 
         Log.d(LOG_TAG,"## onCreateView for  " + mSession.getMyUserId());
+        // All joined Groups and Conversations for Session.
         roomSummaries = new ArrayList<>(mSession.getDataHandler().getStore().getSummaries());
+        // We sort the Rooms according to last Event received;
+        Collections.sort(roomSummaries, Helper.getRoomSummaryComparator(false));
 
-        //Using
-        // https://guides.codepath.com/android/Using-an-ArrayAdapter-with-ListView
-        // Create the adapter to convert the array to views
-        //roomAdapter adapter = new RoomAdapter(this, roomSummaries);
-        // Attach the adapter to a ListView
-        mAdapter = new RoomAdapter(rootView.getContext(), roomSummaries, mSession);
-        listView = (ListView) rootView.findViewById(R.id.rooms_view);
-        listView.setAdapter(mAdapter);
+        mAdapter = new RoomSummaryAdapter(rootView.getContext(), roomSummaries, mSession);
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.rooms_view);
+        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
 
-        //Collections.sort(roomSummaries, Helper.getRoomSummaryComparator(false));
-        mAdapter.sort(Helper.getRoomSummaryComparator(false));
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        /*
+        mRecyclerView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView,
                                     View view, int position, long rowId) {
-                final Intent intent = new Intent(getActivity(), ChatActivity.class);
+                final Intent intent = new Intent(getActivity(), MessagesActivity.class);
                 intent.putExtra("roomId",mAdapter.getItem(position).getRoomId());
                 intent.putExtra("userId",userId);
                 startActivity(intent);
             }
         });
+        */
 
         // Create a new Listener and RoomListener to add incoming messages...
         MXEventListener mListener = new MXEventListener(){
@@ -119,23 +124,18 @@ public class RoomFragment extends Fragment {
                 super.onLiveEvent(event, roomState);
                 Log.d(LOG_TAG, "Live event caught: "+event.getType());
                 if (event.getType().matches(Event.EVENT_TYPE_MESSAGE)) {
-                    //Log.d(LOG_TAG, "New Message somewhere; Updating roomSummaries");
-
                     roomSummaries = new ArrayList<>(mSession.getDataHandler().getStore().getSummaries());
-                    //Collections.sort(roomSummaries, Helper.getRoomSummaryComparator(false));
-                    mAdapter.sort(Helper.getRoomSummaryComparator(false));
-                    mAdapter.clear();
-                    mAdapter.addAll(roomSummaries);
-                    //Does not play well with changed positions.
-                    //mAdapter.notifyDataSetChanged();
+                    // We sort the Rooms according to last Event received;
+                    Collections.sort(roomSummaries, Helper.getRoomSummaryComparator(false));
+                    mAdapter.updateList(roomSummaries);
                 }
             }
         };
         mSession.getDataHandler().addListener(mListener);
 
         return rootView;
-        //return inflater.inflate(R.layout.fragment_room, container, false);
     }
+
 
     @Override
     public void onResume() {
@@ -151,7 +151,7 @@ public class RoomFragment extends Fragment {
         } else {
             //We need to update the Summaries.
             roomSummaries = new ArrayList<>(mSession.getDataHandler().getStore().getSummaries());
-            mAdapter.sort(Helper.getRoomSummaryComparator(false));
+            //mAdapter.sort(Helper.getRoomSummaryComparator(false));
             mAdapter.notifyDataSetChanged();
         }
 

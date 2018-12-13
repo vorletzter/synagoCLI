@@ -1,14 +1,15 @@
 package de.librechurch.synagocli;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
 
 import org.matrix.androidsdk.MXSession;
+import org.matrix.androidsdk.adapters.MessageRow;
 import org.matrix.androidsdk.data.Room;
 import org.matrix.androidsdk.data.RoomMediaMessage;
 import org.matrix.androidsdk.data.RoomState;
@@ -19,19 +20,16 @@ import org.matrix.androidsdk.rest.callback.ApiCallback;
 import org.matrix.androidsdk.rest.model.Event;
 import org.matrix.androidsdk.rest.model.MatrixError;
 
-
-// found some Magic Items from the SDK i could/should use maybe?
-import org.matrix.androidsdk.adapters.AbstractMessagesAdapter;
-import org.matrix.androidsdk.adapters.MessageRow;
-
-
 import java.util.ArrayList;
 
 import de.librechurch.synagocli.Adapter.EventAdapter;
+import de.librechurch.synagocli.Adapter.MessagesAdapter;
 
-public class ChatActivity extends AppCompatActivity {
+// found some Magic Items from the SDK i could/should use maybe?
 
-    private static final String LOG_TAG = ChatActivity.class.getSimpleName();
+public class MessagesActivity extends AppCompatActivity {
+
+    private static final String LOG_TAG = MessagesActivity.class.getSimpleName();
 
     // Our Matrix Singleton
     private Matrix matrix;
@@ -47,9 +45,11 @@ public class ChatActivity extends AppCompatActivity {
     private String userId;
 
     //Instance of our EventAdapterClass
-    EventAdapter adapter;
+    MessagesAdapter mAdapter;
     //The ListView for attaching the EventAdapter.
     ListView listView;
+
+    private RoomState mRoomState;
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -59,7 +59,7 @@ public class ChatActivity extends AppCompatActivity {
         Log.d(LOG_TAG, "Chat was already open.. overwriting");
 
         loadUI();
-        adapter.notifyDataSetChanged();
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -71,37 +71,46 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void loadUI() {
+
         this.matrix = Matrix.getInstance(getApplicationContext());
+
+
         this.newMessageEditText = (EditText) findViewById(R.id.sendTextInput);
 
         this.roomId = getIntent().getExtras().getString("roomId");
         this.userId = getIntent().getExtras().getString("userId");
-        Log.d(LOG_TAG, "opening for userId "+ this.userId+" and roomId "+roomId);
-
-        mSession = Matrix.getInstance(getApplicationContext()).getSessionByUserId(userId);
+        this.mSession = Matrix.getInstance(getApplicationContext()).getSessionByUserId(userId);
         this.room = mSession.getDataHandler().getRoom(roomId);
         this.roomSummary = room.getRoomSummary();
+        this.mRoomState = room.getState();
+
+        Log.d(LOG_TAG, "opening for userId " + this.userId + " and roomId " + roomId);
+
 
         setTitle(this.roomSummary.getLatestRoomState().name);
+
 
         this.room.getDataHandler().setLazyLoadingEnabled(true);
         ArrayList<Event> events = new ArrayList<>(this.room.getStore().getRoomMessages(roomId));
 
         // Create the adapter to convert the array to views
-        adapter = new EventAdapter(this, events, mSession);
-        // Attach the adapter to a ListView
         listView = (ListView) findViewById(R.id.events_view);
-        listView.setAdapter(adapter);
+        mAdapter = new MessagesAdapter(this, 0, mSession);
+
+        for (Event e : events) {
+            mAdapter.add(new MessageRow(e, room.getState()));
+        }
+        // Attach the adapter to a ListView
+        listView.setAdapter(mAdapter);
         listView.setSelection(listView.getCount());
 
-
         // Create a new Listener and RoomListener to add incoming messages...
-        MXEventListener mListener = new MXEventListener(){
+        MXEventListener mListener = new MXEventListener() {
             @Override
             public void onLiveEvent(Event event, RoomState roomState) {
                 super.onLiveEvent(event, roomState);
                 Log.d(LOG_TAG, "Live event caught");
-                processEvent(event);
+                //processEvent(event);
             }
         };
         mSession.getDataHandler().addListener(new MXRoomEventListener(room, mListener));
@@ -112,14 +121,15 @@ public class ChatActivity extends AppCompatActivity {
     /*
         Attach a new Event and Update the UI
         Called by the MXRoomEventListener.
-     */
+
+    */
     public void processEvent(final Event event) {
         Log.d(LOG_TAG, "type:" + event.type);
         if (event.type.equals("m.room.message")) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    adapter.add(event);
+                    mAdapter.add(new MessageRow(event, mRoomState));
                     // scroll the ListView to the last added element
                     listView.setSelection(listView.getCount() - 1);
                 }
@@ -127,10 +137,12 @@ public class ChatActivity extends AppCompatActivity {
         }
     }
 
+
     /*
         Our "onClick"-Method
         The User wants to send a Message
-     */
+        */
+
     public void sendMessage(View view) {
         //Get the Input from out Textvield
         String message = newMessageEditText.getText().toString();
@@ -141,10 +153,10 @@ public class ChatActivity extends AppCompatActivity {
             RoomMediaMessage rm = new RoomMediaMessage(message, null, null);
 
             //Send the Media Message. Use a callback to check, if the Event for the Message could be created
-            room.sendMediaMessage(rm, 0,0,new RoomMediaMessage.EventCreationListener(){
+            room.sendMediaMessage(rm, 0, 0, new RoomMediaMessage.EventCreationListener() {
                 @Override
                 public void onEventCreated(final RoomMediaMessage roomMediaMessage) {
-                    Log.d(LOG_TAG,"Send Message event created and dispatched: " + roomMediaMessage.getEvent().getContent());
+                    Log.d(LOG_TAG, "Send Message event created and dispatched: " + roomMediaMessage.getEvent().getContent());
                     processEvent(roomMediaMessage.getEvent());
 
                     //Attach a Callback to check, if the Message was send to the Server
@@ -159,7 +171,7 @@ public class ChatActivity extends AppCompatActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    adapter.remove(roomMediaMessage.getEvent());
+                                    mAdapter.remove(new MessageRow(roomMediaMessage.getEvent(), mRoomState));
                                     // scroll the ListView to the last added element
                                     listView.setSelection(listView.getCount() - 1);
                                 }
@@ -167,21 +179,29 @@ public class ChatActivity extends AppCompatActivity {
                         }
 
                         @Override
-                        public void onNetworkError(Exception e) { }
+                        public void onNetworkError(Exception e) {
+                        }
+
                         @Override
-                        public void onMatrixError(MatrixError matrixError) { }
+                        public void onMatrixError(MatrixError matrixError) {
+                        }
+
                         @Override
-                        public void onUnexpectedError(Exception e) { }
+                        public void onUnexpectedError(Exception e) {
+                        }
 
                     });
                 }
+
                 @Override
-                public void onEventCreationFailed(RoomMediaMessage roomMediaMessage, String s) { }
+                public void onEventCreationFailed(RoomMediaMessage roomMediaMessage, String s) {
+                }
+
                 @Override
-                public void onEncryptionFailed(RoomMediaMessage roomMediaMessage) { }
+                public void onEncryptionFailed(RoomMediaMessage roomMediaMessage) {
+                }
             });
             newMessageEditText.getText().clear();
         }
-
     }
 }
