@@ -16,8 +16,8 @@ import org.matrix.androidsdk.data.RoomSummary;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.librechurch.synagocli.ChatActivity;
 import de.librechurch.synagocli.Helper.AvatarHelper;
-import de.librechurch.synagocli.MessagesActivity;
 import de.librechurch.synagocli.R;
 
 
@@ -87,7 +87,7 @@ public class RoomSummaryAdapter extends RecyclerView.Adapter<RoomSummaryAdapter.
     }
 
 
-    // We initalise the Adapter with default Items
+    // We initalise the Adapter with some default Items
     public RoomSummaryAdapter(Context context, ArrayList<RoomSummary> rooms, MXSession session) {
         mSession = session;
         mContext = context;
@@ -101,6 +101,7 @@ public class RoomSummaryAdapter extends RecyclerView.Adapter<RoomSummaryAdapter.
     }
 
     // Involves populating data into the item through holder
+    //ToDO: Improve performance, e.g. using an interface in Create() instead of onClickListener here
     @Override
     public void onBindViewHolder(final RoomSummaryAdapter.ViewHolder viewHolder, final int position) {
         // Get the data model based on position
@@ -131,7 +132,7 @@ public class RoomSummaryAdapter extends RecyclerView.Adapter<RoomSummaryAdapter.
         viewHolder.mainView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Intent intent = new Intent(viewHolder.mainView.getContext(), MessagesActivity.class);
+                final Intent intent = new Intent(viewHolder.mainView.getContext(), ChatActivity.class);
                 intent.putExtra("roomId", mRoomSummaries.get(position).getRoomId());
                 intent.putExtra("userId", mSession.getMyUserId());
                 viewHolder.mainView.getContext().startActivity(intent);

@@ -95,24 +95,11 @@ public class RoomFragment extends Fragment {
 
         mAdapter = new RoomSummaryAdapter(rootView.getContext(), roomSummaries, mSession);
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.rooms_view);
+        // Performance Tweak be Preloading
+        mRecyclerView.setItemViewCacheSize(25);
+        mRecyclerView.setDrawingCacheEnabled(true);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
-
-
-        //mRecyclerView.setOnClickListener();
-
-        /*
-        mRecyclerView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView,
-                                    View view, int position, long rowId) {
-                final Intent intent = new Intent(getActivity(), MessagesActivity.class);
-                intent.putExtra("roomId",mAdapter.getItem(position).getRoomId());
-                intent.putExtra("userId",userId);
-                startActivity(intent);
-            }
-        });
-        */
 
         // Create a new Listener and RoomListener to add incoming messages...
         MXEventListener mListener = new MXEventListener(){

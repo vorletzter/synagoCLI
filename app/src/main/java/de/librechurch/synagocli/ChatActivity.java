@@ -3,6 +3,8 @@ package de.librechurch.synagocli;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -27,7 +29,8 @@ import org.matrix.androidsdk.adapters.MessageRow;
 
 import java.util.ArrayList;
 
-import de.librechurch.synagocli.Adapter.EventAdapter;
+import de.librechurch.synagocli.Adapter.MessagesAdapter;
+import de.librechurch.synagocli.Adapter.RoomSummaryAdapter;
 
 public class ChatActivity extends AppCompatActivity {
 
@@ -47,9 +50,11 @@ public class ChatActivity extends AppCompatActivity {
     private String userId;
 
     //Instance of our EventAdapterClass
-    EventAdapter adapter;
+    MessagesAdapter mAdapter;
+    //MessagesAdapter mAdapter;
     //The ListView for attaching the EventAdapter.
-    ListView listView;
+    RecyclerView mRecyclerView;
+    RecyclerView.LayoutManager mLayoutManager;
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -59,7 +64,6 @@ public class ChatActivity extends AppCompatActivity {
         Log.d(LOG_TAG, "Chat was already open.. overwriting");
 
         loadUI();
-        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -73,6 +77,7 @@ public class ChatActivity extends AppCompatActivity {
     private void loadUI() {
         this.matrix = Matrix.getInstance(getApplicationContext());
         this.newMessageEditText = (EditText) findViewById(R.id.sendTextInput);
+        mLayoutManager = new LinearLayoutManager(getApplicationContext());
 
         this.roomId = getIntent().getExtras().getString("roomId");
         this.userId = getIntent().getExtras().getString("userId");
@@ -85,15 +90,21 @@ public class ChatActivity extends AppCompatActivity {
         setTitle(this.roomSummary.getLatestRoomState().name);
 
         this.room.getDataHandler().setLazyLoadingEnabled(true);
+
         ArrayList<Event> events = new ArrayList<>(this.room.getStore().getRoomMessages(roomId));
+        ArrayList<MessageRow> rows = new ArrayList();
+        for (Event e : events) {
+            rows.add(new MessageRow(e, room.getState()));
+        }
 
-        // Create the adapter to convert the array to views
-        adapter = new EventAdapter(this, events, mSession);
-        // Attach the adapter to a ListView
-        listView = (ListView) findViewById(R.id.events_view);
-        listView.setAdapter(adapter);
-        listView.setSelection(listView.getCount());
-
+        mAdapter = new MessagesAdapter(getApplicationContext(), mSession, rows);
+        mRecyclerView = (RecyclerView) findViewById(R.id.message_row_view);
+        // Performance Tweak be Preloading
+        mRecyclerView.setItemViewCacheSize(25);
+        mRecyclerView.setDrawingCacheEnabled(true);
+        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.getLayoutManager().scrollToPosition(mAdapter.getItemCount() - 1);
 
         // Create a new Listener and RoomListener to add incoming messages...
         MXEventListener mListener = new MXEventListener(){
@@ -104,6 +115,7 @@ public class ChatActivity extends AppCompatActivity {
                 processEvent(event);
             }
         };
+
         mSession.getDataHandler().addListener(new MXRoomEventListener(room, mListener));
         room.sendReadReceipt();
     }
@@ -116,14 +128,8 @@ public class ChatActivity extends AppCompatActivity {
     public void processEvent(final Event event) {
         Log.d(LOG_TAG, "type:" + event.type);
         if (event.type.equals("m.room.message")) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    adapter.add(event);
-                    // scroll the ListView to the last added element
-                    listView.setSelection(listView.getCount() - 1);
-                }
-            });
+            mAdapter.add(new MessageRow(event, room.getState()));
+            mLayoutManager.scrollToPosition(mAdapter.getItemCount() - 1);
         }
     }
 
@@ -145,7 +151,7 @@ public class ChatActivity extends AppCompatActivity {
                 @Override
                 public void onEventCreated(final RoomMediaMessage roomMediaMessage) {
                     Log.d(LOG_TAG,"Send Message event created and dispatched: " + roomMediaMessage.getEvent().getContent());
-                    processEvent(roomMediaMessage.getEvent());
+                    //processEvent(roomMediaMessage.getEvent());
 
                     //Attach a Callback to check, if the Message was send to the Server
                     roomMediaMessage.setEventSendingCallback(new ApiCallback<Void>() {
@@ -159,9 +165,9 @@ public class ChatActivity extends AppCompatActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    adapter.remove(roomMediaMessage.getEvent());
+                                    //adapter.remove(roomMediaMessage.getEvent());
                                     // scroll the ListView to the last added element
-                                    listView.setSelection(listView.getCount() - 1);
+                                    //listView.setSelection(listView.getCount() - 1);
                                 }
                             });
                         }
