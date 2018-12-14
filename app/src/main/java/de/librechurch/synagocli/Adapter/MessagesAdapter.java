@@ -59,7 +59,7 @@ public class MessagesAdapter extends AbstractMessagesAdapter {
     }
 
     @Override
-    public MessageRow getMessageRow(String s) {
+    public MessageRow getMessageRow(String eventId) {
         return null;
     }
 
@@ -214,4 +214,13 @@ public class MessagesAdapter extends AbstractMessagesAdapter {
         return convertView;
     }
 
+}
+
+// Class to hold our TextViews, so that we need to look only once
+// ToDo: I don't quite understand, why this saves CPU Cycles... need to research further
+// https://code.tutsplus.com/tutorials/android-from-scratch-understanding-adapters-and-adapter-views--cms-26646
+class ViewEventHolder {
+    public TextView senderName;
+    public TextView messageBody;
+    public ImageView senderAvatar;
 }

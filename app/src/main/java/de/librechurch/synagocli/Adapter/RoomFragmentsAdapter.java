@@ -14,12 +14,12 @@ import de.librechurch.synagocli.Fragments.RoomFragment;
 // Since this is an object collection, use a FragmentStatePagerAdapter,
 // and NOT a FragmentPagerAdapter.
 //public class RoomListsAdapter extends FragmentStatePagerAdapter {
-public class RoomListsAdapter extends FragmentPagerAdapter {
+public class RoomFragmentsAdapter extends FragmentPagerAdapter {
 
     private int numberOfPages;
     private ArrayList sessions;
 
-    public RoomListsAdapter(FragmentManager fm, ArrayList sessions) {
+    public RoomFragmentsAdapter(FragmentManager fm, ArrayList sessions) {
         super(fm);
         this.numberOfPages = sessions.size();
         this.sessions = sessions;

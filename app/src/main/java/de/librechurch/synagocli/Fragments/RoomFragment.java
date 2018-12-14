@@ -12,20 +12,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.matrix.androidsdk.MXSession;
-import org.matrix.androidsdk.data.Room;
 import org.matrix.androidsdk.data.RoomState;
 import org.matrix.androidsdk.data.RoomSummary;
-import org.matrix.androidsdk.data.store.IMXStore;
 import org.matrix.androidsdk.listeners.MXEventListener;
 import org.matrix.androidsdk.rest.model.Event;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 import de.librechurch.synagocli.Adapter.RoomSummaryAdapter;
 import de.librechurch.synagocli.Helper.Helper;
@@ -36,8 +29,9 @@ import de.librechurch.synagocli.R;
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
  */
+
+//ToDo: Show invites and enctypted rooms in a special row maybe?
 public class RoomFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 
     private static final String LOG_TAG = RoomFragment.class.getSimpleName();
@@ -103,6 +97,9 @@ public class RoomFragment extends Fragment {
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.rooms_view);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
+
+
+        //mRecyclerView.setOnClickListener();
 
         /*
         mRecyclerView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

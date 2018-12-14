@@ -10,8 +10,6 @@
     <ImageView
         android:id="@+id/sender_avatar"
         android:layout_alignParentLeft="true"
-        android:scaleType="centerInside"
-        android:background="@drawable/circle"
         android:layout_width="@dimen/chat_avatar_size"
         android:layout_height="@dimen/chat_avatar_size" />
 

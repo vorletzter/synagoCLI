@@ -1,6 +1,7 @@
 package de.librechurch.synagocli.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.librechurch.synagocli.Helper.AvatarHelper;
+import de.librechurch.synagocli.MessagesActivity;
 import de.librechurch.synagocli.R;
 
 
@@ -33,6 +35,7 @@ public class RoomSummaryAdapter extends RecyclerView.Adapter<RoomSummaryAdapter.
     public class ViewHolder extends RecyclerView.ViewHolder {
         // The ViewHolder contains a direct reference to all elements
         // in "room.xml" View
+        View mainView;
         TextView roomName;
         TextView roomTopic;
         TextView roomMID;
@@ -47,6 +50,7 @@ public class RoomSummaryAdapter extends RecyclerView.Adapter<RoomSummaryAdapter.
             // to access the context from any ViewHolder instance.
             super(itemView);
             // Lookup view for data population
+            mainView = itemView;
             roomName =
                     (TextView) itemView.findViewById(R.id.room_name);
             roomTopic =
@@ -98,7 +102,7 @@ public class RoomSummaryAdapter extends RecyclerView.Adapter<RoomSummaryAdapter.
 
     // Involves populating data into the item through holder
     @Override
-    public void onBindViewHolder(RoomSummaryAdapter.ViewHolder viewHolder, int position) {
+    public void onBindViewHolder(final RoomSummaryAdapter.ViewHolder viewHolder, final int position) {
         // Get the data model based on position
         RoomSummary roomSummary = mRoomSummaries.get(position);
         Room room = mSession.getDataHandler().getRoom(roomSummary.getRoomId());
@@ -123,6 +127,17 @@ public class RoomSummaryAdapter extends RecyclerView.Adapter<RoomSummaryAdapter.
         roomMID.setText(room.getRoomId());
         roomTopic.setText(room.getTopic());
 
+        //Set an onClick Listener for each element.
+        viewHolder.mainView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Intent intent = new Intent(viewHolder.mainView.getContext(), MessagesActivity.class);
+                intent.putExtra("roomId", mRoomSummaries.get(position).getRoomId());
+                intent.putExtra("userId", mSession.getMyUserId());
+                viewHolder.mainView.getContext().startActivity(intent);
+            }
+        });
+
     }
 
     /**
@@ -141,6 +156,12 @@ public class RoomSummaryAdapter extends RecyclerView.Adapter<RoomSummaryAdapter.
         mRoomSummaries.clear();
         mRoomSummaries.addAll(rooms);
         notifyDataSetChanged();
+    }
+
+    View.OnClickListener onItemClickListener;
+
+    public void setItemClickListener(View.OnClickListener clickListener) {
+        onItemClickListener = clickListener;
     }
 
 }

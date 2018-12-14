@@ -15,12 +15,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import de.librechurch.synagocli.Adapter.RoomListsAdapter;
+import de.librechurch.synagocli.Adapter.RoomFragmentsAdapter;
 
 //public class HomeActivity extends FragmentActivity {
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    RoomListsAdapter mRoomListsAdapter;
+    RoomFragmentsAdapter mRoomFragmentsAdapter;
     ViewPager mViewPager;
     private static final String LOG_TAG = HomeActivity.class.getSimpleName();
 
@@ -31,11 +31,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_home);
 
         /*  Pass the Sessions to an Adapter, responsible to generate a Fragment for each
-            Session (RoomFragment) showing all active Rooms for a session
+            Session The RoomFragment shows all active Rooms for a session
          */
-        mRoomListsAdapter = new RoomListsAdapter(getSupportFragmentManager(), Matrix.getInstance(getApplicationContext()).getAllActiveUserIds());
+        mRoomFragmentsAdapter = new RoomFragmentsAdapter(getSupportFragmentManager(), Matrix.getInstance(getApplicationContext()).getAllActiveUserIds());
         mViewPager = (ViewPager) findViewById(R.id.home_room_container);
-        mViewPager.setAdapter(mRoomListsAdapter);
+        mViewPager.setAdapter(mRoomFragmentsAdapter);
 
         /*
             setup Actionbar Navigation
